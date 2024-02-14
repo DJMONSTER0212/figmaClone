@@ -22,7 +22,7 @@ const Live = () => {
     }, []);
 
     const handlePointerLeave = useCallback((event: React.PointerEvent) => {
-        setCursorState({mode : CursorMode.Hidden})
+        setCursorState({ mode: CursorMode.Hidden })
         updateMyPresence({ cursor: null, message: null });
 
     }, [])
@@ -36,9 +36,38 @@ const Live = () => {
 
     }, []);
 
-    useEffect(()=>{
-        // const onKeyU
-    },[])
+    useEffect(() => {
+        const onKeyUp = (e: KeyboardEvent) => {
+            if (e.key === '/') {
+                setCursorState({
+                    mode: CursorMode.Chat,
+                    previousMessage: null,
+                    message: ''
+                })
+            } else if (e.key === 'Escape') {
+                updateMyPresence({ message: '' })
+                setCursorState({ mode: CursorMode.Hidden })
+            }
+
+        }
+
+        const onKeyDown = (e: KeyboardEvent) => {
+            if (e.key === '/') {
+                e.preventDefault();
+            }
+        }
+
+        window.addEventListener('keyup', onKeyUp);
+        window.addEventListener('keydown', onKeyDown);
+
+        return () => {
+            window.addEventListener('keyup', onKeyUp);
+            window.addEventListener('keydown', onKeyDown);
+        }
+
+
+
+    }, [updateMyPresence])
 
     return (
         <div
@@ -50,9 +79,9 @@ const Live = () => {
 
             {cursor && (<CursorChat
                 cursor={cursor}
-                cursorState = {cursorState}
-                setCursorState = {setCursorState}
-                updateMyPresence = {updateMyPresence}
+                cursorState={cursorState}
+                setCursorState={setCursorState}
+                updateMyPresence={updateMyPresence}
             />)}
 
             <LiveCursor others={others} />
